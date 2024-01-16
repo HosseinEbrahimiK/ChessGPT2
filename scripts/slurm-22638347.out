@@ -1,0 +1,3 @@
+2024-01-15 16:37:48.157 | INFO     | __main__:read_games:16 - Started reading .pgn file
+2024-01-15 16:37:48.292 | INFO     | __main__:read_games:26 - 0 has been read!!
+2024-01-15 16:39:19.710 | INFO     | __main__:read_games:26 - 10000 has been read!!
