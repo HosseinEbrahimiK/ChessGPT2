@@ -107,3 +107,8 @@ def setup_train():
         batch_size=args.batch_size,
         n_epochs=args.epochs
     )
+
+
+if __name__ == "__main__":
+    setup_train()
+
