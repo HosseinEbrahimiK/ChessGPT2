@@ -4,12 +4,13 @@ from transformers import Trainer, TrainingArguments
 from argparse import ArgumentParser
 
 
-class GPT2_fine_tuning():
+class GPT2LM_fine_tuning():
 
-    def __init__(self, file_path: str, model_name: str) -> None:
+    def __init__(self, file_path: str, model_name_path: str) -> None:
 
         self.train_path = file_path
-        self.tokenizer = GPT2Tokenizer.from_pretrained(model_name)
+        self.tokenizer = GPT2Tokenizer.from_pretrained(model_name_path)
+        self.model = GPT2LMHeadModel.from_pretrained(model_name_path)
 
     def load_dataset(self, block_size: int):
         dataset = TextDataset(
@@ -19,8 +20,7 @@ class GPT2_fine_tuning():
         )
         return dataset
 
-
-    def load_data_collator(self, tokenizer, mlm = False):
+    def load_data_collator(self, mlm = False):
         data_collator = DataCollatorForLanguageModeling(
             tokenizer=self.tokenizer, 
             mlm=mlm,
@@ -29,34 +29,35 @@ class GPT2_fine_tuning():
 
 
     def train(self,
-            model_name: str,
             output_dir: str,
             block_size: int,
-            overwrite_output_dir: str,
-            per_device_train_batch_size: int,
-            n_epochs: int,):
+            batch_size: int,
+            n_epochs: int,
+            run_name: str):
  
         train_dataset = self.load_dataset(block_size=block_size)
+        eval_dataset = self.load_dataset(block_size=block_size)
         data_collator = self.load_data_collator()
 
         self.tokenizer.save_pretrained(output_dir)
-            
-        model = GPT2LMHeadModel.from_pretrained(model_name)
-
-        model.save_pretrained(output_dir)
+        self.model.save_pretrained(output_dir)
 
         training_args = TrainingArguments(
                 output_dir=output_dir,
-                overwrite_output_dir=overwrite_output_dir,
-                per_device_train_batch_size=per_device_train_batch_size,
+                overwrite_output_dir=True,
+                per_device_train_batch_size=batch_size,
                 num_train_epochs=n_epochs,
+                save_strategy='epoch',
+                save_total_limit=1,
+                run_name=run_name
             )
 
         trainer = Trainer(
-                model=model,
+                model=self.model,
                 args=training_args,
                 data_collator=data_collator,
                 train_dataset=train_dataset,
+                eval_dataset=eval_dataset
         )
             
         trainer.train()
