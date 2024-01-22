@@ -31,6 +31,8 @@ def read_games(file_address: str, TRAIN_NUM=500000, VAL_NUM=100000) -> None:
         moves = re.sub(r'\$\S+', '', moves)
         moves = re.sub(r'\s{2,}', ' ', moves)
 
+        print(moves)
+        exit()
         if num_games < TRAIN_NUM:
             train += moves
         else:
@@ -40,13 +42,13 @@ def read_games(file_address: str, TRAIN_NUM=500000, VAL_NUM=100000) -> None:
 
         game = chess.pgn.read_game(pgn)
 
-    with open("/home/hebz/scratch/chessGPT/500000_games/train.txt", "w") as f:
+    with open("/home/hebz/scratch/chessGPT/100000_games/train.txt", "w") as f:
         f.write(train)
 
-    with open("/home/hebz/scratch/chessGPT/500000_games/val.txt", "w") as f:
+    with open("/home/hebz/scratch/chessGPT/100000_games/val.txt", "w") as f:
         f.write(val)
     
     return
 
 if __name__ == "__main__":
-    read_games('/home/hebz/scratch/chessGPT/lichess_Nov_2023/lichess_db_standard_rated_2023-11.pgn')
+    read_games('/home/hebz/scratch/chessGPT/lichess_Nov_2023/lichess_db_standard_rated_2023-11.pgn', TRAIN_NUM=100000, VAL_NUM=10000)
