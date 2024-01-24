@@ -27,3 +27,6 @@ Qxe3+ 60. Kh2 Qg1+ 61. Kg3 Qe3+ 62. Kh2 d1=Q 63. g3 Qh5
 
 ## Training
 
+<p align="center">
+  <img src="https://github.com/HosseinEbrahimiK/ChessGPT2/blob/main/logs/eval_loss.png"/>
+</p>
