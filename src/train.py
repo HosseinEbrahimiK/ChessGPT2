@@ -1,17 +1,41 @@
 import torch
 
 from transformers import TextDataset, DataCollatorForLanguageModeling
-from transformers import GPT2Tokenizer, GPT2LMHeadModel
-from transformers import Trainer, TrainingArguments
+from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import TrainingArguments, BitsAndBytesConfig
+from peft import LoraConfig
+from trl import SFTTrainer
+
 from argparse import ArgumentParser
 
 
-class GPT2LM_fine_tuning():
+class LLM_fine_tuning():
 
-    def __init__(self,  model_name_path: str) -> None:
+    def __init__(self,
+                model_name_path: str,
+                cache_dir: str,
+                use_bnb: bool = True,) -> None:
 
-        self.tokenizer = GPT2Tokenizer.from_pretrained(model_name_path)
-        self.model = GPT2LMHeadModel.from_pretrained(model_name_path)
+        if use_bnb:
+            bnb_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_use_double_quant=True,
+                bnb_4bit_quant_type="nf4",
+                bnb_4bit_compute_dtype=torch.bfloat16
+            )
+
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            model_name_path,
+            quantization_config=bnb_config,
+            trust_remote_code=True,
+            use_cache=False,
+            device_map="auto",
+            cache_dir=cache_dir)
+        
+        self.model = AutoModelForCausalLM.from_pretrained(
+            model_name_path,
+            trust_remote_code=True,
+            cache_dir=cache_dir)
 
     def load_dataset(self, file_path: str, block_size: int):
         dataset = TextDataset(
@@ -41,8 +65,17 @@ class GPT2LM_fine_tuning():
         eval_dataset = self.load_dataset(block_size=block_size, file_path=eval_path)
         data_collator = self.load_data_collator()
 
-        self.tokenizer.save_pretrained(output_dir)
-        self.model.save_pretrained(output_dir)
+        lora_alpha = 16
+        lora_dropout = 0.1
+        lora_r = 64
+
+        peft_config = LoraConfig(
+            lora_alpha=lora_alpha,
+            lora_dropout=lora_dropout,
+            r=lora_r,
+            bias="none",
+            task_type="CAUSAL_LM",
+        )
 
         device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         self.model.to(device)
@@ -59,15 +92,16 @@ class GPT2LM_fine_tuning():
                 do_train=True,
                 do_eval=True,
             )
-
-        trainer = Trainer(
-                model=self.model,
-                args=training_args,
-                data_collator=data_collator,
-                train_dataset=train_dataset,
-                eval_dataset=eval_dataset
+        trainer = SFTTrainer(
+            model=self.model,
+            train_dataset=train_dataset,
+            eval_dataset=eval_dataset,
+            peft_config=peft_config,
+            data_collator=data_collator,
+            dataset_text_field="text",
+            tokenizer=self.tokenizer,
+            args=training_args,
         )
-            
         trainer.train()
         trainer.save_model()
 
@@ -97,7 +131,7 @@ def setup_train():
 
     args = parser.parse_args()
 
-    gpt2 = GPT2LM_fine_tuning(model_name_path='gpt2')
+    gpt2 = LLM_fine_tuning(model_name_path='gpt2')
 
     gpt2.train(
         train_path=args.train,

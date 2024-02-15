@@ -31,8 +31,6 @@ def read_games(file_address: str, TRAIN_NUM=500000, VAL_NUM=100000) -> None:
         moves = re.sub(r'\$\S+', '', moves)
         moves = re.sub(r'\s{2,}', ' ', moves)
 
-        print(moves)
-        exit()
         if num_games < TRAIN_NUM:
             train += moves
         else:

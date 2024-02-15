@@ -1,3 +1,0 @@
-/localscratch/spool/slurmd/job22909251/slurm_script: line 12: /home/hebz/envs/chessGPT/bin/activate: No such file or directory
-/localscratch/spool/slurmd/job22909251/slurm_script: line 14: cd: /home/hebz/projects/def-ibirol/hebz/GPT2/src/: No such file or directory
-python3: can't open file '/project/6000515/hebz/ChessGPT2/scripts/datasets.py': [Errno 2] No such file or directory
