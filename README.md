@@ -1,7 +1,7 @@
 # ChessGPT2
 I instruction fine-tuned Llama 2 13B-hf Large Language Model (LLM) to play chess. I used BitsAndBytes to load the llama 2 in 4-bit int quantization and LoRA to fine-tune low-rank adaptors. I also utilized Hugging Face's accelerate package to be able to train on multiple GPUs.
 
-I added a simple instruction `Predict the next move in this chess game` as a prompt to the beginning of each game sample.
+I added a simple instruction `What's the next move in this chess game` as a prompt to the beginning of each game sample.
 
 ## Dastaset
 
@@ -10,7 +10,7 @@ I downloaded November archive of lichess.org open database. It had moves and oth
 I removed annotations on games records so that each train/val example would have only moves and the winner.
 
 ```
-Predict the next move in this chess game: 1. e4 c6 2. Bc4 d5 3. exd5 cxd5 4. Bb5+ Nc6 5. Bxc6+ bxc6
+What's the next move in this chess game: 1. e4 c6 2. Bc4 d5 3. exd5 cxd5 4. Bb5+ Nc6 5. Bxc6+ bxc6
 6. Nc3 Nf6 7. Nf3 e5 8. Nxe5 Qd6 9. d4 Nd7 10. Nxd7 Bxd7 
 11. Be3 Qb4 12. Qb1 Rb8 13. Bd2 Qxb2 14. Qxb2 Rxb2 15. 
 O-O Rxc2 16. Rfd1 Bb4 17. Rab1 Bxc3 18. Bxc3 Rxc3 19. Rb8
