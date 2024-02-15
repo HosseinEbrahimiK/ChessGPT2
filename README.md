@@ -1,7 +1,7 @@
 # ChessGPT2
 I instruction fine-tuned Llama 2 13B-hf Large Language Model (LLM) to play chess. I used BitsAndBytes to load the llama 2 in 4-bit int quantization and LoRA to fine-tune low-rank adaptors. I also utilized Hugging Face's accelerate package to be able to train on multiple GPUs.
 
-I added a simple instruction 'Predict the next move in this chess game' as a prompt to the beginning of each game sample.
+I added a simple instruction `Predict the next move in this chess game`` as a prompt to the beginning of each game sample.
 
 ## Dastaset
 
